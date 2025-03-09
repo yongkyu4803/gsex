@@ -57,8 +57,8 @@ def copy_to_clipboard(text, idx):
                 console.error('클립보드 복사 오류:', err);
             }}
         }}
-        // 페이지 로드 시 실행
-        window.onload = copyToClipboard;
+        // 버튼 클릭 시 바로 함수 호출
+        copyToClipboard();
     </script>
     """
     
