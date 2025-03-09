@@ -106,11 +106,6 @@ def main():
                 with cols[1]:
                     st.markdown(f'<a href="{item["link"]}" target="_blank">🔗</a>', unsafe_allow_html=True)
                 
-                # 토글을 이용한 복사용 텍스트 영역
-                copy_text = f"{item['title']}\n{item['link']}\n{item['pubDate']}"
-                with st.expander("복사용 텍스트 보기"):
-                    st.text_area("복사할 텍스트 (전체 선택 후 복사하세요)", value=copy_text, height=100)
-                
                 # 뉴스 아이템 구분선
                 if idx < len(st.session_state['news_items']) - 1:
                     st.markdown('<hr style="margin: 5px 0; border: 0; height: 1px; background-color: #e0e0e0;">', unsafe_allow_html=True)
