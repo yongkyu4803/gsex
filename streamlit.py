@@ -38,27 +38,35 @@ def fetch_sheet_data():
 
 def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
+    # JavaScript 코드가 실행될 때 텍스트를 이스케이프
+    escaped_text = text.replace('`', '\\`').replace('\n', '\\n')
+    
     js_code = f"""
-        <script>
-            async function copyToClipboard() {{
-                const text = `{text}`;
-                try {{
-                    const textArea = document.createElement("textarea");
-                    textArea.value = text;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                }} catch (err) {{
-                    console.error('Failed to copy:', err);
-                }}
+    <script>
+        function copyToClipboard() {{
+            try {{
+                navigator.clipboard.writeText(`{escaped_text}`).then(
+                    function() {{
+                        window.parent.postMessage({{type: "copySuccess", idx: {idx}}}, "*");
+                    }}, 
+                    function(err) {{
+                        console.error('클립보드 복사 실패:', err);
+                    }}
+                );
+            }} catch (err) {{
+                console.error('클립보드 복사 오류:', err);
             }}
-            copyToClipboard();
-        </script>
+        }}
+        // 페이지 로드 시 실행
+        window.onload = copyToClipboard;
+    </script>
     """
+    
     st.components.v1.html(js_code, height=0)
     st.session_state[f'copied_{idx}'] = True
-    st.session_state[f'reset_scheduled_{idx}'] = True
+    # 3초 후에 복사 상태를 원래대로 되돌리기 위한 타임스탬프 설정
+    st.session_state[f'reset_time_{idx}'] = time.time() + 3
+
 def main():
     st.title("🔍 이시간 단독뉴스")
     st.markdown("---")
@@ -125,12 +133,26 @@ def main():
         with st.spinner("뉴스를 가져오는 중..."):
             st.session_state['news_items'] = fetch_sheet_data()
     
-    # 예약된 초기화 처리
+    # 복사 상태 리셋 처리 (타이머 기반)
+    current_time = time.time()
     for idx in range(len(st.session_state.get('news_items', []))):
-        reset_key = f'reset_scheduled_{idx}'
-        if st.session_state.get(reset_key, False):
+        reset_key = f'reset_time_{idx}'
+        if reset_key in st.session_state and current_time > st.session_state[reset_key]:
             st.session_state[f'copied_{idx}'] = False
-            st.session_state[reset_key] = False
+            del st.session_state[reset_key]
+    
+    # 이벤트 리스너 설정 (JavaScript와 통신하기 위한 코드)
+    event_listener = """
+    <script>
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'copySuccess') {
+                // 스트림릿에 메시지 전달
+                window.parent.postMessage({type: "streamlit:setComponentValue", value: true}, "*");
+            }
+        });
+    </script>
+    """
+    st.components.v1.html(event_listener, height=0)
     
     # 뉴스 아이템 표시
     if st.session_state['news_items']:
@@ -156,14 +178,12 @@ def main():
                     copy_text = f"{item['title']}\n{item['link']}\n{item['pubDate']}"
                     button_label = "✓" if st.session_state[f'copied_{idx}'] else "📋"
                     
-                    st.button(
+                    if st.button(
                         button_label, 
                         key=f"copy_{idx}", 
-                        on_click=copy_to_clipboard, 
-                        args=(copy_text, idx)
-                    )
-                    
-                    if st.session_state[f'copied_{idx}']:
+                        help="클립보드에 복사"
+                    ):
+                        copy_to_clipboard(copy_text, idx)
                         st.toast("클립보드에 복사되었습니다!")
                 
                 # 구분선 추가
