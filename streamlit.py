@@ -38,22 +38,24 @@ def fetch_sheet_data():
 
 def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
-    js_code = f"""
+    # Create a temporary text area for copying
+    st.markdown(f"""
+        <textarea id="clipboard_{idx}" style="position: absolute; left: -9999px;">{text}</textarea>
         <script>
-            var text = `{text}`;
-            navigator.clipboard.writeText(text)
-                .then(() => {{
-                    window.parent.document.querySelector('[data-testid="stToast"]').style.display = 'block';
-                }})
-                .catch(err => console.error('Failed to copy: ', err));
+            function copyToClipboard_{idx}() {{
+                let textarea = document.getElementById('clipboard_{idx}');
+                textarea.select();
+                document.execCommand('copy');
+            }}
+            copyToClipboard_{idx}();
         </script>
-    """
-    st.components.v1.html(js_code, height=0)
+    """, unsafe_allow_html=True)
+    
     st.session_state[f'copied_{idx}'] = True
     st.session_state[f'reset_scheduled_{idx}'] = True
 
 def main():
-    st.title("🔍 단독뉴스")
+    st.title("🔍 이시간 단독뉴스")
     st.markdown("---")
 
     # 세션 상태 초기화
@@ -166,6 +168,20 @@ def main():
     else:
         if 'first_load' in st.session_state:
             st.info("새로운 단독뉴스가 없습니다.")
+    
+    # Add footer
+    st.markdown("---")
+    st.markdown("""
+        <style>
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            padding: 20px 0;
+        }
+        </style>
+        <p class='footer'>Made by GQ 💡</p>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
