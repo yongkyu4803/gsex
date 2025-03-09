@@ -35,8 +35,17 @@ def fetch_sheet_data():
         df = pd.read_csv(sheet_url)
         # 데이터프레임을 딕셔너리 리스트로 변환
         news_items = df.to_dict('records')
+        
+        # 날짜 형식 변환
+        for item in news_items:
+            # RFC 2822 형식의 날짜 문자열을 datetime 객체로 변환
+            date_obj = datetime.strptime(item['pubDate'], '%a, %d %b %Y %H:%M:%S %z')
+            # 원하는 형식으로 변환
+            item['pubDate'] = date_obj.strftime('%Y년 %m월 %d일 %p %I시 %M분').replace('AM', '오전').replace('PM', '오후')
+            
         # 최신순으로 정렬
-        news_items.sort(key=lambda x: x['pubDate'], reverse=True)
+        news_items.sort(key=lambda x: datetime.strptime(x['pubDate'].replace('오전', 'AM').replace('오후', 'PM'), 
+                                                      '%Y년 %m월 %d일 %p %I시 %M분'), reverse=True)
         return news_items
     except Exception as e:
         st.error(f"데이터 로드 실패: {str(e)}")
