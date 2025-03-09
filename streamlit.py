@@ -11,6 +11,16 @@ st.set_page_config(
     layout="centered"
 )
 
+# Add Open Graph meta tags
+st.markdown("""
+    <head>
+        <meta property="og:title" content="단독뉴스 모니터링">
+        <meta property="og:description" content="실시간 단독뉴스 모니터링 서비스">
+        <meta property="og:image" content="https://cdn.pixabay.com/photo/2015/11/06/15/13/news-1028791_1280.jpg">
+        <meta property="og:url" content="https://gq-exnews.streamlit.app">
+    </head>
+""", unsafe_allow_html=True)
+
 # 환경 변수 로드
 # Google Sheets API 설정
 SPREADSHEET_ID = '1rymOVrvXUltUCIcaY-hhDLV9J05LcV7cPAX0Nt8IHsI'
