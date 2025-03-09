@@ -38,22 +38,22 @@ def fetch_sheet_data():
 
 def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
-    # Create a temporary text area for copying
+    # 숨겨진 컨테이너에 복사 기능 추가
     st.markdown(f"""
-        <textarea id="clipboard_{idx}" style="position: absolute; left: -9999px;">{text}</textarea>
-        <script>
-            function copyToClipboard_{idx}() {{
-                let textarea = document.getElementById('clipboard_{idx}');
-                textarea.select();
-                document.execCommand('copy');
-            }}
-            copyToClipboard_{idx}();
-        </script>
+        <div style="display: none;">
+            <textarea id="clipboard_{idx}">{text}</textarea>
+            <script>
+                (() => {{
+                    const textarea = document.getElementById('clipboard_{idx}');
+                    textarea.select();
+                    document.execCommand('copy');
+                }})();
+            </script>
+        </div>
     """, unsafe_allow_html=True)
     
     st.session_state[f'copied_{idx}'] = True
     st.session_state[f'reset_scheduled_{idx}'] = True
-
 def main():
     st.title("🔍 이시간 단독뉴스")
     st.markdown("---")
