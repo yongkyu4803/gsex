@@ -81,8 +81,8 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    # 페이지 로드 시와 새로고침 버튼 클릭 시 뉴스 불러오기
-    if refresh_clicked or 'first_load' not in st.session_state:
+    # 페이지 로드 시 뉴스 불러오기
+    if 'first_load' not in st.session_state:
         st.session_state['first_load'] = True
         with st.spinner("뉴스를 가져오는 중..."):
             st.session_state['news_items'] = fetch_sheet_data()
