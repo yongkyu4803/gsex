@@ -38,18 +38,14 @@ def fetch_sheet_data():
 
 def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
-    # 숨겨진 컨테이너에 복사 기능 추가
-    st.markdown(f"""
-        <div style="display: none;">
-            <textarea id="clipboard_{idx}">{text}</textarea>
-            <script>
-                (() => {{
-                    const textarea = document.getElementById('clipboard_{idx}');
-                    textarea.select();
-                    document.execCommand('copy');
-                }})();
-            </script>
-        </div>
+    # 클립보드에 텍스트 복사를 위한 임시 텍스트 영역 생성
+    st.code(text, language=None)
+    st.markdown("""
+        <style>
+        .streamlit-expanderContent {
+            display: none;
+        }
+        </style>
     """, unsafe_allow_html=True)
     
     st.session_state[f'copied_{idx}'] = True
