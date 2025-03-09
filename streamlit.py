@@ -36,12 +36,12 @@ def main():
     st.title("🔍 이시간 단독뉴스")
     st.markdown("---")
     
+    # 관리자 공지 섹션 추가
+    st.info("test")
+    
     # 세션 상태 초기화
     if 'news_items' not in st.session_state:
         st.session_state['news_items'] = []
-    
-    # 새로고침 버튼 배치
-    refresh_clicked = st.button("🔄")
     
     # CSS 스타일 적용
     st.markdown("""
