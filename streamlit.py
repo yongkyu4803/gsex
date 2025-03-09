@@ -38,16 +38,33 @@ def fetch_sheet_data():
 
 def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
-    # 클립보드에 텍스트 복사를 위한 임시 텍스트 영역 생성
-    st.code(text, language=None)
-    st.markdown("""
-        <style>
-        .streamlit-expanderContent {
-            display: none;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
+    js_code = f"""
+        <script>
+            function copyToClipboard() {{
+                const text = `{text}`;
+                if (navigator.clipboard && window.isSecureContext) {{
+                    navigator.clipboard.writeText(text);
+                }} else {{
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {{
+                        document.execCommand('copy');
+                        textArea.remove();
+                    }} catch (err) {{
+                        console.error('Failed to copy text:', err);
+                    }}
+                }}
+            }}
+            copyToClipboard();
+        </script>
+    """
+    st.components.v1.html(js_code, height=0)
     st.session_state[f'copied_{idx}'] = True
     st.session_state[f'reset_scheduled_{idx}'] = True
 def main():
