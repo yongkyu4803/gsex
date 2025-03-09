@@ -37,7 +37,7 @@ def main():
     st.markdown("---")
     
     # 관리자 공지 섹션 추가
-    st.info("test")
+    st.info("5분 간격으로 업데이트 됩니다! ")
     
     # 세션 상태 초기화
     if 'news_items' not in st.session_state:
