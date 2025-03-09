@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 단독뉴스 모니터링 애플리케이션 📰
 
 ## 소개
@@ -31,3 +32,6 @@ pip install streamlit pandas pyperclip
 ## 환경 설정
 애플리케이션을 실행하기 전에 Google Sheets ID를 설정해야 합니다.
 현재 설정된 Spreadsheet ID: 1rymOVrvXUltUCIcaY-hhDLV9J05LcV7cPAX0Nt8IHsI
+=======
+# gsex
+>>>>>>> 2032f0548cc6c297444df6a64293c1adf956f418
