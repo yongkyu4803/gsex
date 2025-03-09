@@ -56,7 +56,7 @@ def main():
     st.markdown("---")
     
     # 관리자 공지 섹션 추가
-    st.info("- 5분 간격으로 업데이트 됩니다!\n- 문의 : GQ.newslens@gmail.com \n- 국회 앞 식당정보 https://na-res.streamlit.app/")
+    st.info("- 5분 간격으로 업데이트 됩니다!\n- 업데이트 중에 일부 기사가 중복해서 보일 수 있습니다. \n- 문의 : GQ.newslens@gmail.com \n- 국회 앞 식당정보 https://na-res.streamlit.app/")
     
     # 세션 상태 초기화
     if 'news_items' not in st.session_state:
