@@ -40,25 +40,17 @@ def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
     js_code = f"""
         <script>
-            function copyToClipboard() {{
+            async function copyToClipboard() {{
                 const text = `{text}`;
-                if (navigator.clipboard && window.isSecureContext) {{
-                    navigator.clipboard.writeText(text);
-                }} else {{
+                try {{
                     const textArea = document.createElement("textarea");
                     textArea.value = text;
-                    textArea.style.position = "fixed";
-                    textArea.style.left = "-999999px";
-                    textArea.style.top = "-999999px";
                     document.body.appendChild(textArea);
-                    textArea.focus();
                     textArea.select();
-                    try {{
-                        document.execCommand('copy');
-                        textArea.remove();
-                    }} catch (err) {{
-                        console.error('Failed to copy text:', err);
-                    }}
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                }} catch (err) {{
+                    console.error('Failed to copy:', err);
                 }}
             }}
             copyToClipboard();
