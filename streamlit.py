@@ -3,7 +3,6 @@ import time
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import pyperclip
 
 # 초기 설정 (모바일 최적화 보기)
 st.set_page_config(
@@ -39,7 +38,17 @@ def fetch_sheet_data():
 
 def copy_to_clipboard(text, idx):
     """클립보드에 텍스트 복사하고 상태 업데이트"""
-    pyperclip.copy(text)
+    js_code = f"""
+        <script>
+            var text = `{text}`;
+            navigator.clipboard.writeText(text)
+                .then(() => {{
+                    window.parent.document.querySelector('[data-testid="stToast"]').style.display = 'block';
+                }})
+                .catch(err => console.error('Failed to copy: ', err));
+        </script>
+    """
+    st.components.v1.html(js_code, height=0)
     st.session_state[f'copied_{idx}'] = True
     st.session_state[f'reset_scheduled_{idx}'] = True
 
