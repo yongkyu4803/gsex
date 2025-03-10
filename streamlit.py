@@ -38,14 +38,21 @@ def fetch_sheet_data():
         
         # 날짜 형식 변환
         for item in news_items:
-            # RFC 2822 형식의 날짜 문자열을 datetime 객체로 변환
-            date_obj = datetime.strptime(item['pubDate'], '%a, %d %b %Y %H:%M:%S %z')
-            # 원하는 형식으로 변환
-            item['pubDate'] = date_obj.strftime('%Y년 %m월 %d일 %p %I시 %M분').replace('AM', '오전').replace('PM', '오후')
+            try:
+                # float나 다른 타입을 문자열로 변환
+                pub_date = str(item['pubDate']).strip()
+                # RFC 2822 형식의 날짜 문자열을 datetime 객체로 변환
+                date_obj = datetime.strptime(pub_date, '%a, %d %b %Y %H:%M:%S %z')
+                # 원하는 형식으로 변환
+                item['pubDate'] = date_obj.strftime('%Y년 %m월 %d일 %p %I시 %M분').replace('AM', '오전').replace('PM', '오후')
+            except (ValueError, TypeError):
+                # 날짜 변환에 실패한 경우 기본값 설정
+                item['pubDate'] = '날짜 정보 없음'
             
-        # 최신순으로 정렬
+        # 최신순으로 정렬 (날짜 정보 없는 항목은 마지막으로)
         news_items.sort(key=lambda x: datetime.strptime(x['pubDate'].replace('오전', 'AM').replace('오후', 'PM'), 
-                                                      '%Y년 %m월 %d일 %p %I시 %M분'), reverse=True)
+                                                      '%Y년 %m월 %d일 %p %I시 %M분') if x['pubDate'] != '날짜 정보 없음' 
+                                                      else datetime.min, reverse=True)
         return news_items
     except Exception as e:
         st.error(f"데이터 로드 실패: {str(e)}")
